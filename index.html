@@ -1,1793 +1,462 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Native App Prototype v2</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
-        rel="stylesheet">
-    <style>
-        :root {
-            --navy-deep: #0B2338;
-            --navy: #14365A;
-            --navy-elev: #1D4A73;
-            --navy-card: #193F65;
-            --ice: #C4CDD6;
-            --muted: #8A9BAD;
-            --white: #FFFFFF;
-            --accent: #E8825F;
-            --accent-deep: #C25F3D;
-            --pine: #4C8C6B;
-            --line: rgba(255, 255, 255, .10);
-            --danger: #E1846B;
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            background: #081826;
-            font-family: 'Noto Sans JP', sans-serif;
-            color: var(--white);
-        }
-
-        .stage {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 18px;
-            padding: 32px 16px 64px;
-        }
-
-        .lab {
-            font-family: 'Poppins', sans-serif;
-            font-size: 11px;
-            letter-spacing: .16em;
-            text-transform: uppercase;
-            color: var(--muted);
-            text-align: center;
-        }
-
-        .hint {
-            max-width: 390px;
-            text-align: center;
-            font-size: 12px;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .hint b {
-            color: var(--accent);
-        }
-
-        .phone {
-            width: 390px;
-            max-width: 92vw;
-            height: 844px;
-            max-height: 88vh;
-            background: var(--navy-deep);
-            border-radius: 44px;
-            border: 8px solid #030B14;
-            box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .75), 0 0 0 1px rgba(255, 255, 255, .04);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 26px;
-            background: #030B14;
-            border-radius: 0 0 16px 16px;
-            z-index: 60;
-        }
-
-        .statusbar {
-            height: 44px;
-            flex: none;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            padding: 0 26px 8px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .screen {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            scrollbar-width: none;
-            position: relative;
-        }
-
-        .screen::-webkit-scrollbar {
-            display: none;
-        }
-
-        .fade {
-            animation: fadein .22s ease;
-        }
-
-        @keyframes fadein {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .topbar {
-            padding: 2px 18px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 44px;
-        }
-
-        .topbar .left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .backbtn {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, .06);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex: none;
-            cursor: pointer;
-        }
-
-        .backbtn svg {
-            width: 15px;
-            height: 15px;
-            stroke: var(--white);
-        }
-
-        .screentitle {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 15px;
-            letter-spacing: .01em;
-        }
-
-        .mark {
-            width: 32px;
-            height: 32px;
-            border-radius: 9px;
-            background: var(--navy-card);
-            border: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex: none;
-            cursor: pointer;
-        }
-
-        .mark svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--navy-card);
-            border: 1.5px solid var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: var(--white);
-            font-weight: 700;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-        }
-
-        .warnbanner {
-            margin: 0 18px 14px;
-            padding: 10px 13px;
-            border-radius: 10px;
-            background: rgba(225, 132, 107, .14);
-            border: 1px solid rgba(225, 132, 107, .4);
-            color: #F6C9BA;
-            font-size: 11.5px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .warnbanner svg {
-            width: 16px;
-            height: 16px;
-            stroke: #F6C9BA;
-            flex: none;
-        }
-
-        .warnbanner b {
-            color: var(--white);
-        }
-
-        .section-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 11.5px;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--muted);
-            padding: 0 18px;
-            margin: 20px 0 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .section-title a {
-            color: var(--accent);
-            font-size: 11px;
-            letter-spacing: 0;
-            text-transform: none;
-            text-decoration: none;
-            font-family: 'Noto Sans JP', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .card {
-            background: var(--navy-card);
-            border: 1px solid var(--line);
-            border-radius: 16px;
-        }
-
-        .tap {
-            cursor: pointer;
-            transition: transform .12s ease, background .12s ease;
-        }
-
-        .tap:active {
-            transform: scale(.97);
-            background: var(--navy-elev);
-        }
-
-        /* HOME */
-        .ascent-wrap {
-            margin: 0 18px;
-            padding: 20px 16px 16px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ascent-wrap .ridge-svg {
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            height: auto;
-        }
-
-        .ascent-head {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .phase-tag {
-            font-family: 'Poppins', sans-serif;
-            font-size: 10.5px;
-            letter-spacing: .14em;
-            color: var(--accent);
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .phase-title {
-            font-family: 'Noto Sans JP', sans-serif;
-            font-size: 18px;
-            font-weight: 900;
-            margin-top: 4px;
-        }
-
-        .alt-now {
-            text-align: right;
-        }
-
-        .alt-now .num {
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--white);
-            line-height: 1;
-        }
-
-        .alt-now .unit {
-            font-size: 9.5px;
-            color: var(--muted);
-            letter-spacing: .08em;
-        }
-
-        .ascent-body {
-            position: relative;
-            z-index: 2;
-            margin-top: 54px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 10.5px;
-            color: var(--ice);
-            font-family: 'Poppins', sans-serif;
-            letter-spacing: .03em;
-        }
-
-        .quicktiles {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding: 0 18px;
-        }
-
-        .tile {
-            background: var(--navy-card);
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 14px 6px 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            text-align: center;
-        }
-
-        .tile .ic {
-            width: 30px;
-            height: 30px;
-            border-radius: 9px;
-            background: rgba(232, 130, 95, .15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .tile .ic svg {
-            width: 16px;
-            height: 16px;
-            stroke: var(--accent);
-        }
-
-        .tile .tl {
-            font-size: 11px;
-            font-weight: 700;
-            line-height: 1.3;
-        }
-
-        .tile .sub {
-            font-size: 9px;
-            color: var(--muted);
-        }
-
-        .missioncard {
-            margin: 0 18px;
-            padding: 15px;
-            display: flex;
-            gap: 13px;
-            align-items: center;
-        }
-
-        .missioncard .mi {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            background: linear-gradient(145deg, var(--accent), var(--accent-deep));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex: none;
-        }
-
-        .missioncard .mi svg {
-            width: 20px;
-            height: 20px;
-            stroke: var(--navy-deep);
-        }
-
-        .missioncard .body {
-            flex: 1;
-        }
-
-        .missioncard .ti {
-            font-weight: 700;
-            font-size: 13px;
-        }
-
-        .missioncard .de {
-            font-size: 10.5px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-        .missioncard .go {
-            font-size: 11px;
-            color: var(--accent);
-            font-weight: 700;
-        }
-
-        .bottomnav {
-            flex: none;
-            height: 74px;
-            background: var(--navy);
-            border-top: 1px solid var(--line);
-            display: flex;
-            align-items: flex-start;
-            padding-top: 10px;
-        }
-
-        .navitem {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            font-size: 9.5px;
-            color: var(--muted);
-            position: relative;
-            cursor: pointer;
-        }
-
-        .navitem.active {
-            color: var(--white);
-        }
-
-        .navitem.active svg {
-            stroke: var(--accent);
-        }
-
-        .navitem svg {
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-            fill: none;
-        }
-
-        .navitem .lockdot {
-            position: absolute;
-            top: -2px;
-            right: 26%;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--danger);
-        }
-
-        .navtooltip {
-            position: absolute;
-            bottom: 64px;
-            left: 50%;
-            transform: translateX(-50%) translateY(6px);
-            background: var(--navy-elev);
-            border: 1px solid var(--accent);
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 10.5px;
-            color: var(--white);
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .18s ease, transform .18s ease;
-            font-family: 'Noto Sans JP', sans-serif;
-            font-weight: 700;
-            box-shadow: 0 10px 24px -8px rgba(0, 0, 0, .6);
-            z-index: 70;
-        }
-
-        .navtooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid transparent;
-            border-top-color: var(--accent);
-        }
-
-        .navtooltip.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* UNIT MAP */
-        .unitmap-wrap {
-            position: relative;
-            padding: 6px 0 30px;
-        }
-
-        .unitmap-ridge {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            z-index: 0;
-            opacity: .5;
-        }
-
-        .unode-col {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
-            padding: 16px 0;
-        }
-
-        .unode {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            position: relative;
-        }
-
-        .unode.done {
-            background: var(--pine);
-            color: #E9F3EC;
-        }
-
-        .unode.current {
-            background: var(--accent);
-            color: var(--navy-deep);
-            box-shadow: 0 0 0 5px rgba(232, 130, 95, .2);
-            cursor: pointer;
-        }
-
-        .unode.locked {
-            background: var(--navy-card);
-            color: var(--muted);
-            border: 1px solid var(--line);
-        }
-
-        .unode svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .ucaption {
-            font-size: 9.5px;
-            color: var(--muted);
-            text-align: center;
-            margin-top: 6px;
-            font-family: 'Poppins', sans-serif;
-            letter-spacing: .03em;
-        }
-
-        .progresspill {
-            margin-top: -12px;
-            background: var(--navy-card);
-            border: 1px solid var(--accent);
-            border-radius: 20px;
-            padding: 5px 13px;
-            font-size: 9.5px;
-            color: var(--accent);
-            font-family: 'Poppins', sans-serif;
-        }
-
-        /* OUTPUT */
-        .task-photo {
-            margin: 0 18px;
-            border-radius: 16px;
-            overflow: hidden;
-            position: relative;
-            height: 210px;
-            background: linear-gradient(160deg, #1D4A73, #0B2338);
-        }
-
-        .task-photo .mesh {
-            position: absolute;
-            inset: 0;
-            background-image: radial-gradient(circle at 30% 20%, rgba(232, 130, 95, .16), transparent 60%);
-        }
-
-        .task-photo .cd {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(3, 11, 20, .65);
-            border: 1px solid var(--accent);
-            border-radius: 20px;
-            padding: 5px 12px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 11.5px;
-            color: var(--accent);
-        }
-
-        .task-photo .day {
-            position: absolute;
-            bottom: 12px;
-            left: 14px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 10.5px;
-            letter-spacing: .12em;
-            color: var(--ice);
-            text-transform: uppercase;
-        }
-
-        .task-prompt {
-            margin: 16px 18px 0;
-            font-family: 'Noto Sans JP', sans-serif;
-            font-weight: 700;
-            font-size: 15px;
-            line-height: 1.7;
-        }
-
-        .task-actions {
-            margin: 20px 18px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .rec-btn {
-            width: 74px;
-            height: 74px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 30%, var(--accent), var(--accent-deep));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 24px -6px rgba(232, 130, 95, .45);
-            cursor: pointer;
-        }
-
-        .rec-btn svg {
-            width: 24px;
-            height: 24px;
-            stroke: var(--navy-deep);
-        }
-
-        .try-badge {
-            font-family: 'Poppins', sans-serif;
-            font-size: 10.5px;
-            letter-spacing: .08em;
-            color: var(--muted);
-            text-transform: uppercase;
-        }
-
-        .ghostbtn {
-            border: 1px solid var(--line);
-            color: var(--ice);
-            font-size: 11.5px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: transparent;
-            cursor: pointer;
-        }
-
-        .phrasebtn {
-            margin: 18px 18px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 11.5px;
-            color: var(--accent);
-            border: 1px dashed rgba(232, 130, 95, .5);
-            border-radius: 12px;
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        /* MY PHRASE */
-        .folder-grid {
-            padding: 0 18px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .folder {
-            padding: 14px;
-            position: relative;
-        }
-
-        .folder .badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(232, 130, 95, .16);
-            color: var(--accent);
-            font-size: 9.5px;
-            padding: 2px 7px;
-            border-radius: 8px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .folder .ti {
-            font-weight: 700;
-            font-size: 12px;
-            margin-top: 16px;
-            line-height: 1.4;
-        }
-
-        .folder .sub {
-            font-size: 9.5px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-        .folder.selected {
-            border-color: var(--accent);
-        }
-
-        .flash {
-            margin: 16px 18px 0;
-            padding: 24px 18px;
-            text-align: center;
-            position: relative;
-            min-height: 140px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .flash .en {
-            font-family: 'Noto Sans JP', sans-serif;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .flash .jp {
-            font-size: 11.5px;
-            color: var(--muted);
-        }
-
-        .flash .rowbtns {
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            margin-top: 6px;
-        }
-
-        .iconbtn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--navy-elev);
-            border: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .iconbtn svg {
-            width: 14px;
-            height: 14px;
-            stroke: var(--ice);
-        }
-
-        .iconbtn.sel {
-            border-color: var(--accent);
-            background: rgba(232, 130, 95, .15);
-        }
-
-        .iconbtn.sel svg {
-            stroke: var(--accent);
-        }
-
-        .learned-btn {
-            margin: 16px 18px 0;
-            text-align: center;
-            background: transparent;
-            border: 1px solid var(--pine);
-            color: #9FCBB0;
-            padding: 10px;
-            border-radius: 12px;
-            font-size: 11.5px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .learned-btn.sel {
-            background: var(--pine);
-            color: #0E1F17;
-        }
-
-        /* RECORDS */
-        .goalring-row {
-            display: flex;
-            gap: 12px;
-            padding: 0 18px;
-        }
-
-        .ringcard {
-            flex: 1;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .ring {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: conic-gradient(var(--accent) var(--pct, 70%), var(--line) 0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .ring::before {
-            content: '';
-            position: absolute;
-            inset: 6px;
-            border-radius: 50%;
-            background: var(--navy-card);
-        }
-
-        .ring span {
-            position: relative;
-            font-family: 'Poppins', sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .ringcard .lb {
-            font-size: 10px;
-            color: var(--muted);
-            text-align: center;
-        }
-
-        .barchart {
-            margin: 14px 18px 0;
-            padding: 16px;
-        }
-
-        .bars {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-            height: 86px;
-            margin-top: 14px;
-        }
-
-        .bar {
-            flex: 1;
-            background: linear-gradient(180deg, var(--accent), var(--accent-deep));
-            border-radius: 5px 5px 2px 2px;
-        }
-
-        .bar.low {
-            background: var(--navy-elev);
-        }
-
-        .barlabels {
-            display: flex;
-            gap: 8px;
-            margin-top: 6px;
-        }
-
-        .barlabels span {
-            flex: 1;
-            text-align: center;
-            font-size: 9px;
-            color: var(--muted);
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .logrow {
-            margin: 0 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 14px;
-            border-bottom: 1px solid var(--line);
-            font-size: 11.5px;
-        }
-
-        .logrow .t {
-            color: var(--muted);
-            font-family: 'Poppins', sans-serif;
-            font-size: 10.5px;
-        }
-
-        .logrow:last-child {
-            border-bottom: none;
-        }
-
-        /* MYPAGE */
-        .profile-hero {
-            margin: 0 18px;
-            padding: 22px 18px;
-            text-align: center;
-            position: relative;
-        }
-
-        .profile-hero .av {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--navy-elev);
-            border: 2px solid var(--accent);
-            margin: 0 auto 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 20px;
-            color: var(--white);
-        }
-
-        .profile-hero .nm {
-            font-weight: 700;
-            font-size: 14.5px;
-        }
-
-        .profile-hero .ph {
-            font-size: 10.5px;
-            color: var(--accent);
-            margin-top: 4px;
-            font-family: 'Poppins', sans-serif;
-            letter-spacing: .08em;
-        }
-
-        .fieldgroup {
-            margin: 14px 18px 0;
-            background: var(--navy-card);
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .fieldrow {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 13px 16px;
-            border-bottom: 1px solid var(--line);
-            font-size: 12px;
-        }
-
-        .fieldrow .k {
-            color: var(--muted);
-        }
-
-        .fieldrow .v {
-            font-weight: 600;
-        }
-
-        .fieldrow:last-child {
-            border-bottom: none;
-        }
-
-        .cta-plan {
-            margin: 20px 18px 0;
-            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-            border-radius: 14px;
-            padding: 15px;
-            text-align: center;
-            color: var(--navy-deep);
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .logoutrow {
-            margin: 14px 18px 0;
-            text-align: center;
-            padding: 13px;
-            border-radius: 12px;
-            border: 1px solid var(--line);
-            color: var(--danger);
-            font-size: 12.5px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* FREE TRAINING */
-        .cat-list {
-            padding: 0 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .catrow {
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .catrow .ic {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: rgba(232, 130, 95, .15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex: none;
-        }
-
-        .catrow .ic svg {
-            width: 17px;
-            height: 17px;
-            stroke: var(--accent);
-        }
-
-        .catrow .ti {
-            font-weight: 700;
-            font-size: 13px;
-            flex: 1;
-        }
-
-        .catrow .chev {
-            width: 14px;
-            height: 14px;
-            stroke: var(--muted);
-        }
-
-        /* QUIZ / MISSION shared simple */
-        .simplebox {
-            margin: 0 18px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .bignum {
-            font-family: 'Poppins', sans-serif;
-            font-size: 34px;
-            font-weight: 800;
-            color: var(--accent);
-        }
-
-        .optrow {
-            display: flex;
-            gap: 8px;
-            margin-top: 14px;
-        }
-
-        .opt {
-            flex: 1;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid var(--line);
-            font-size: 12px;
-            text-align: center;
-            color: var(--ice);
-            cursor: pointer;
-        }
-
-        .opt.sel {
-            border-color: var(--accent);
-            color: var(--white);
-            background: rgba(232, 130, 95, .1);
-        }
-
-        .primarybtn {
-            margin-top: 16px;
-            background: var(--accent);
-            color: var(--navy-deep);
-            font-weight: 700;
-            font-size: 13px;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .primarybtn.ghost {
-            background: transparent;
-            border: 1px solid var(--line);
-            color: var(--ice);
-        }
-
-        /* HUB SCREENS (インプット / アウトプット) */
-        .hubhero {
-            margin: 0 18px;
-            padding: 18px 16px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--accent);
-        }
-
-        .hubhero .eyebrow {
-            font-family: 'Poppins', sans-serif;
-            font-size: 10px;
-            letter-spacing: .14em;
-            color: var(--accent);
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-
-        .hubhero .htitle {
-            font-weight: 900;
-            font-size: 15px;
-            margin-top: 6px;
-        }
-
-        .hubhero .hdesc {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 4px;
-            line-height: 1.6;
-        }
-
-        .hubhero .harrow {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hubhero .harrow svg {
-            width: 14px;
-            height: 14px;
-            stroke: var(--navy-deep);
-        }
-
-        .hubstat {
-            margin: 0 18px;
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .hubstat .ring {
-            width: 46px;
-            height: 46px;
-            flex: none;
-        }
-
-        .hubstat .ring span {
-            font-size: 10px;
-        }
-
-        .hubstat .txt {
-            flex: 1;
-        }
-
-        .hubstat .txt .k {
-            font-size: 10.5px;
-            color: var(--muted);
-        }
-
-        .hubstat .txt .v {
-            font-size: 13px;
-            font-weight: 700;
-            margin-top: 2px;
-        }
-
-        .hubrow {
-            padding: 13px 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .hubrow .ic {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex: none;
-        }
-
-        .hubrow .ic svg {
-            width: 16px;
-            height: 16px;
-            stroke: var(--accent);
-        }
-
-        .hubrow .body {
-            flex: 1;
-        }
-
-        .hubrow .ti {
-            font-weight: 700;
-            font-size: 12.5px;
-        }
-
-        .hubrow .badge {
-            display: inline-block;
-            margin-top: 4px;
-            font-size: 9.5px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 8px;
-        }
-
-        .hubrow .badge.todo {
-            background: rgba(232, 130, 95, .16);
-            color: var(--accent);
-        }
-
-        .hubrow .badge.done {
-            background: rgba(76, 140, 107, .18);
-            color: #8FBF9F;
-        }
-
-        .hubrow .badge.info {
-            background: rgba(255, 255, 255, .08);
-            color: var(--ice);
-        }
-
-        .hubrow .chev {
-            width: 14px;
-            height: 14px;
-            stroke: var(--muted);
-            flex: none;
-        }
-
-        /* ===== AUTH / SPLASH / ONBOARDING ===== */
-        .authwrap {
-            padding: 38px 22px 24px;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .authmark {
-            width: 64px;
-            height: 64px;
-            border-radius: 18px;
-            background: var(--navy-card);
-            border: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 18px;
-        }
-
-        .authmark svg {
-            width: 32px;
-            height: 32px;
-        }
-
-        .authtitle {
-            text-align: center;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 18px;
-        }
-
-        .authsub {
-            text-align: center;
-            font-size: 11.5px;
-            color: var(--muted);
-            margin-top: 6px;
-        }
-
-        .authtabs {
-            display: flex;
-            gap: 6px;
-            margin: 22px 0 20px;
-            background: var(--navy-card);
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 4px;
-        }
-
-        .authtab {
-            flex: 1;
-            text-align: center;
-            padding: 9px;
-            border-radius: 9px;
-            font-size: 12.5px;
-            font-weight: 700;
-            color: var(--muted);
-            cursor: pointer;
-        }
-
-        .authtab.active {
-            background: var(--accent);
-            color: var(--navy-deep);
-        }
-
-        .fieldlabel {
-            font-size: 11px;
-            color: var(--muted);
-            margin: 14px 2px 6px;
-            font-family: 'Poppins', sans-serif;
-            letter-spacing: .03em;
-        }
-
-        .fieldinput {
-            background: var(--navy-card);
-            border: 1px solid var(--line);
-            border-radius: 11px;
-            padding: 12px 14px;
-            font-size: 13px;
-            color: var(--white);
-        }
-
-        .fieldinput.placeholder {
-            color: var(--muted);
-        }
-
-        .authcheck {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 16px;
-            font-size: 11px;
-            color: var(--muted);
-        }
-
-        .authcheck .box {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-            border: 1.5px solid var(--accent);
-            background: rgba(232, 130, 95, .15);
-            flex: none;
-        }
-
-        .authcta {
-            margin-top: 20px;
-            background: var(--accent);
-            color: var(--navy-deep);
-            text-align: center;
-            font-weight: 700;
-            font-size: 13.5px;
-            padding: 13px;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-
-        .authswitch {
-            text-align: center;
-            font-size: 11.5px;
-            color: var(--muted);
-            margin-top: 16px;
-        }
-
-        .authswitch b {
-            color: var(--accent);
-            cursor: pointer;
-        }
-
-        .splashwrap {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 22px;
-            padding: 0 30px;
-            text-align: center;
-        }
-
-        .splashmark {
-            width: 96px;
-            height: 96px;
-            border-radius: 26px;
-            background: var(--navy-card);
-            border: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .splashmark svg {
-            width: 48px;
-            height: 48px;
-        }
-
-        .splashtag {
-            font-size: 12.5px;
-            color: var(--ice);
-            line-height: 1.7;
-        }
-
-        .splashcta {
-            width: 100%;
-            background: var(--accent);
-            color: var(--navy-deep);
-            text-align: center;
-            font-weight: 700;
-            font-size: 13.5px;
-            padding: 14px;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-
-        .splashghost {
-            font-size: 11.5px;
-            color: var(--muted);
-            cursor: pointer;
-        }
-
-        .splashghost b {
-            color: var(--accent);
-        }
-
-        .obprogress {
-            padding: 14px 18px 4px;
-        }
-
-        .obbarwrap {
-            display: flex;
-            gap: 4px;
-        }
-
-        .obseg {
-            flex: 1;
-            height: 4px;
-            border-radius: 3px;
-            background: var(--navy-card);
-        }
-
-        .obseg.done {
-            background: var(--accent);
-        }
-
-        .obstep-label {
-            font-family: 'Poppins', sans-serif;
-            font-size: 10px;
-            color: var(--muted);
-            letter-spacing: .1em;
-            margin-top: 8px;
-            text-transform: uppercase;
-        }
-
-        .obtitle {
-            font-family: 'Noto Sans JP', sans-serif;
-            font-weight: 900;
-            font-size: 19px;
-            margin: 14px 18px 4px;
-        }
-
-        .obsub {
-            font-size: 11.5px;
-            color: var(--muted);
-            margin: 0 18px 18px;
-            line-height: 1.6;
-        }
-
-        .obfield {
-            margin: 0 18px 14px;
-        }
-
-        .obfield .lb {
-            font-size: 11px;
-            color: var(--muted);
-            margin-bottom: 6px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .obfield .box {
-            background: var(--navy-card);
-            border: 1px solid var(--line);
-            border-radius: 11px;
-            padding: 12px 14px;
-            font-size: 12.5px;
-            color: var(--white);
-            line-height: 1.6;
-        }
-
-        .chiprow {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .chip {
-            padding: 8px 14px;
-            border-radius: 20px;
-            border: 1px solid var(--line);
-            font-size: 11.5px;
-            color: var(--ice);
-            cursor: pointer;
-        }
-
-        .chip.sel {
-            background: rgba(232, 130, 95, .15);
-            border-color: var(--accent);
-            color: var(--white);
-        }
-
-        .obfooter {
-            margin: 20px 18px 0;
-            display: flex;
-            gap: 10px;
-        }
-
-        .obfooter .primarybtn {
-            flex: 1;
-            margin: 0;
-        }
-
-        .obdone-wrap {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            padding: 0 30px;
-            text-align: center;
-        }
-
-        .obdone-mark {
-            width: 88px;
-            height: 88px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, var(--accent), var(--accent-deep));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .obdone-mark svg {
-            width: 38px;
-            height: 38px;
-            stroke: var(--navy-deep);
-        }
-
-        .obdone-title {
-            font-family: 'Noto Sans JP', sans-serif;
-            font-weight: 900;
-            font-size: 19px;
-        }
-
-        .obdone-sub {
-            font-size: 12px;
-            color: var(--muted);
-            line-height: 1.7;
-        }
-
-        /* logout sheet */
-        .sheetoverlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(3, 11, 20, .6);
-            display: flex;
-            align-items: flex-end;
-            z-index: 80;
-        }
-
-        .sheet {
-            width: 100%;
-            background: var(--navy);
-            border-radius: 20px 20px 0 0;
-            padding: 22px 20px 26px;
-            border-top: 1px solid var(--line);
-        }
-
-        .sheet .ti {
-            font-weight: 700;
-            font-size: 14.5px;
-            text-align: center;
-        }
-
-        .sheet .de {
-            font-size: 11.5px;
-            color: var(--muted);
-            text-align: center;
-            margin-top: 6px;
-            line-height: 1.6;
-        }
-
-        .sheet .rowbtn {
-            display: flex;
-            gap: 10px;
-            margin-top: 18px;
-        }
-
-        .sheet .rowbtn div {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 12.5px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .sheet .cancel {
-            border: 1px solid var(--line);
-            color: var(--ice);
-        }
-
-        .sheet .confirm {
-            background: var(--danger);
-            color: var(--navy-deep);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Native App Prototype v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0B2338;
+    --navy:#14365A;
+    --navy-elev:#1D4A73;
+    --navy-card:#193F65;
+    --ice:#C4CDD6;
+    --muted:#8A9BAD;
+    --white:#FFFFFF;
+    --accent:#E8825F;
+    --accent-deep:#C25F3D;
+    --pine:#4C8C6B;
+    --line:rgba(255,255,255,.10);
+    --danger:#E1846B;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:#081826;font-family:'Noto Sans JP',sans-serif;color:var(--white);}
+  .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:18px;padding:32px 16px 64px;}
+  .lab{font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-align:center;}
+  .hint{max-width:390px;text-align:center;font-size:12px;color:var(--muted);line-height:1.6;}
+  .hint b{color:var(--accent);}
+
+  .phone{
+    width:390px;max-width:92vw;height:844px;max-height:88vh;
+    background:var(--navy-deep);border-radius:44px;border:8px solid #030B14;
+    box-shadow:0 30px 80px -20px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.04);
+    position:relative;overflow:hidden;display:flex;flex-direction:column;
+  }
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:26px;background:#030B14;border-radius:0 0 16px 16px;z-index:60;}
+  .statusbar{height:44px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;}
+  .screen{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;position:relative;}
+  .screen::-webkit-scrollbar{display:none;}
+  .fade{animation:fadein .22s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .topbar{padding:2px 18px 16px;display:flex;align-items:center;justify-content:space-between;min-height:44px;}
+  .topbar .left{display:flex;align-items:center;gap:10px;}
+  .backbtn{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;}
+  .backbtn svg{width:15px;height:15px;stroke:var(--white);}
+  .screentitle{font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;letter-spacing:.01em;}
+  .mark{width:32px;height:32px;border-radius:9px;background:var(--navy-card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;}
+  .mark svg{width:16px;height:16px;}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-card);border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--white);font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;}
+
+  .warnbanner{margin:0 18px 14px;padding:10px 13px;border-radius:10px;background:rgba(225,132,107,.14);border:1px solid rgba(225,132,107,.4);color:#F6C9BA;font-size:11.5px;display:flex;gap:8px;align-items:center;cursor:pointer;}
+  .warnbanner svg{width:16px;height:16px;stroke:#F6C9BA;flex:none;}
+  .warnbanner b{color:var(--white);}
+
+  .section-title{font-family:'Poppins',sans-serif;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 18px;margin:20px 0 10px;display:flex;align-items:center;justify-content:space-between;}
+  .section-title a{color:var(--accent);font-size:11px;letter-spacing:0;text-transform:none;text-decoration:none;font-family:'Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;}
+
+  .card{background:var(--navy-card);border:1px solid var(--line);border-radius:16px;}
+  .tap{cursor:pointer;transition:transform .12s ease, background .12s ease;}
+  .tap:active{transform:scale(.97);background:var(--navy-elev);}
+
+  /* HOME */
+  .ascent-wrap{margin:0 18px;padding:20px 16px 16px;position:relative;overflow:hidden;}
+  .ascent-wrap .ridge-svg{position:absolute;left:0;bottom:0;width:100%;height:auto;}
+  .ascent-head{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;}
+  .phase-tag{font-family:'Poppins',sans-serif;font-size:10.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;font-weight:600;}
+  .phase-title{font-family:'Noto Sans JP',sans-serif;font-size:18px;font-weight:900;margin-top:4px;}
+  .alt-now{text-align:right;}
+  .alt-now .num{font-family:'Poppins',sans-serif;font-size:24px;font-weight:700;color:var(--white);line-height:1;}
+  .alt-now .unit{font-size:9.5px;color:var(--muted);letter-spacing:.08em;}
+  .ascent-body{position:relative;z-index:2;margin-top:54px;display:flex;justify-content:space-between;font-size:10.5px;color:var(--ice);font-family:'Poppins',sans-serif;letter-spacing:.03em;}
+
+  .quicktiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 18px;}
+  .tile{background:var(--navy-card);border:1px solid var(--line);border-radius:14px;padding:14px 6px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;}
+  .tile .ic{width:30px;height:30px;border-radius:9px;background:rgba(232,130,95,.15);display:flex;align-items:center;justify-content:center;}
+  .tile .ic svg{width:16px;height:16px;stroke:var(--accent);}
+  .tile .tl{font-size:11px;font-weight:700;line-height:1.3;}
+  .tile .sub{font-size:9px;color:var(--muted);}
+
+  .missioncard{margin:0 18px;padding:15px;display:flex;gap:13px;align-items:center;}
+  .missioncard .mi{width:42px;height:42px;border-radius:12px;background:linear-gradient(145deg,var(--accent),var(--accent-deep));display:flex;align-items:center;justify-content:center;flex:none;}
+  .missioncard .mi svg{width:20px;height:20px;stroke:var(--navy-deep);}
+  .missioncard .body{flex:1;}
+  .missioncard .ti{font-weight:700;font-size:13px;}
+  .missioncard .de{font-size:10.5px;color:var(--muted);margin-top:2px;}
+  .missioncard .go{font-size:11px;color:var(--accent);font-weight:700;}
+
+  .bottomnav{flex:none;height:74px;background:var(--navy);border-top:1px solid var(--line);display:flex;align-items:flex-start;padding-top:10px;}
+  .navitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:9.5px;color:var(--muted);position:relative;cursor:pointer;}
+  .navitem.active{color:var(--white);}
+  .navitem.active svg{stroke:var(--accent);}
+  .navitem svg{width:20px;height:20px;stroke:currentColor;fill:none;}
+  .navitem .lockdot{position:absolute;top:-2px;right:26%;width:6px;height:6px;border-radius:50%;background:var(--danger);}
+  .navtooltip{
+    position:absolute;bottom:64px;left:50%;transform:translateX(-50%) translateY(6px);
+    background:var(--navy-elev);border:1px solid var(--accent);border-radius:10px;
+    padding:8px 12px;font-size:10.5px;color:var(--white);white-space:nowrap;
+    opacity:0;pointer-events:none;transition:opacity .18s ease, transform .18s ease;
+    font-family:'Noto Sans JP',sans-serif;font-weight:700;
+    box-shadow:0 10px 24px -8px rgba(0,0,0,.6);z-index:70;
+  }
+  .navtooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--accent);}
+  .navtooltip.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* UNIT MAP */
+  .unitmap-wrap{position:relative;padding:6px 0 30px;}
+  .unitmap-ridge{position:absolute;left:0;top:0;width:100%;z-index:0;opacity:.5;}
+  .unode-col{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:24px;padding:16px 0;}
+  .unode{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;position:relative;}
+  .unode.done{background:var(--pine);color:#E9F3EC;}
+  .unode.current{background:var(--accent);color:var(--navy-deep);box-shadow:0 0 0 5px rgba(232,130,95,.2);cursor:pointer;}
+  .unode.locked{background:var(--navy-card);color:var(--muted);border:1px solid var(--line);}
+  .unode svg{width:20px;height:20px;}
+  .ucaption{font-size:9.5px;color:var(--muted);text-align:center;margin-top:6px;font-family:'Poppins',sans-serif;letter-spacing:.03em;}
+  .progresspill{margin-top:-12px;background:var(--navy-card);border:1px solid var(--accent);border-radius:20px;padding:5px 13px;font-size:9.5px;color:var(--accent);font-family:'Poppins',sans-serif;}
+
+  /* OUTPUT */
+  .task-photo{margin:0 18px;border-radius:16px;overflow:hidden;position:relative;height:210px;background:linear-gradient(160deg,#1D4A73,#0B2338);}
+  .task-photo .mesh{position:absolute;inset:0;background-image:radial-gradient(circle at 30% 20%, rgba(232,130,95,.16), transparent 60%);}
+  .task-photo .cd{position:absolute;top:12px;right:12px;background:rgba(3,11,20,.65);border:1px solid var(--accent);border-radius:20px;padding:5px 12px;font-family:'Poppins',sans-serif;font-size:11.5px;color:var(--accent);}
+  .task-photo .day{position:absolute;bottom:12px;left:14px;font-family:'Poppins',sans-serif;font-size:10.5px;letter-spacing:.12em;color:var(--ice);text-transform:uppercase;}
+  .task-prompt{margin:16px 18px 0;font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:15px;line-height:1.7;}
+  .task-actions{margin:20px 18px 0;display:flex;flex-direction:column;gap:10px;align-items:center;}
+  .rec-btn{width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 35% 30%, var(--accent), var(--accent-deep));display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -6px rgba(232,130,95,.45);cursor:pointer;}
+  .rec-btn svg{width:24px;height:24px;stroke:var(--navy-deep);}
+  .try-badge{font-family:'Poppins',sans-serif;font-size:10.5px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;}
+  .ghostbtn{border:1px solid var(--line);color:var(--ice);font-size:11.5px;padding:8px 16px;border-radius:20px;background:transparent;cursor:pointer;}
+  .phrasebtn{margin:18px 18px 0;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:var(--accent);border:1px dashed rgba(232,130,95,.5);border-radius:12px;padding:10px;cursor:pointer;}
+
+  /* MY PHRASE */
+  .folder-grid{padding:0 18px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .folder{padding:14px;position:relative;}
+  .folder .badge{position:absolute;top:10px;right:10px;background:rgba(232,130,95,.16);color:var(--accent);font-size:9.5px;padding:2px 7px;border-radius:8px;font-family:'Poppins',sans-serif;}
+  .folder .ti{font-weight:700;font-size:12px;margin-top:16px;line-height:1.4;}
+  .folder .sub{font-size:9.5px;color:var(--muted);margin-top:2px;}
+  .folder.selected{border-color:var(--accent);}
+
+  .flash{margin:16px 18px 0;padding:24px 18px;text-align:center;position:relative;min-height:140px;display:flex;flex-direction:column;justify-content:center;gap:10px;}
+  .flash .en{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:16px;}
+  .flash .jp{font-size:11.5px;color:var(--muted);}
+  .flash .rowbtns{display:flex;justify-content:center;gap:14px;margin-top:6px;}
+  .iconbtn{width:32px;height:32px;border-radius:50%;background:var(--navy-elev);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .iconbtn svg{width:14px;height:14px;stroke:var(--ice);}
+  .iconbtn.sel{border-color:var(--accent);background:rgba(232,130,95,.15);}
+  .iconbtn.sel svg{stroke:var(--accent);}
+  .learned-btn{margin:16px 18px 0;text-align:center;background:transparent;border:1px solid var(--pine);color:#9FCBB0;padding:10px;border-radius:12px;font-size:11.5px;font-weight:700;cursor:pointer;}
+  .learned-btn.sel{background:var(--pine);color:#0E1F17;}
+
+  /* RECORDS */
+  .goalring-row{display:flex;gap:12px;padding:0 18px;}
+  .ringcard{flex:1;padding:15px;display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .ring{width:60px;height:60px;border-radius:50%;background:conic-gradient(var(--accent) var(--pct,70%), var(--line) 0);display:flex;align-items:center;justify-content:center;position:relative;}
+  .ring::before{content:'';position:absolute;inset:6px;border-radius:50%;background:var(--navy-card);}
+  .ring span{position:relative;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;}
+  .ringcard .lb{font-size:10px;color:var(--muted);text-align:center;}
+
+  .barchart{margin:14px 18px 0;padding:16px;}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:86px;margin-top:14px;}
+  .bar{flex:1;background:linear-gradient(180deg,var(--accent),var(--accent-deep));border-radius:5px 5px 2px 2px;}
+  .bar.low{background:var(--navy-elev);}
+  .barlabels{display:flex;gap:8px;margin-top:6px;}
+  .barlabels span{flex:1;text-align:center;font-size:9px;color:var(--muted);font-family:'Poppins',sans-serif;}
+
+  .logrow{margin:0 18px;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);font-size:11.5px;}
+  .logrow .t{color:var(--muted);font-family:'Poppins',sans-serif;font-size:10.5px;}
+  .logrow:last-child{border-bottom:none;}
+
+  /* MYPAGE */
+  .profile-hero{margin:0 18px;padding:22px 18px;text-align:center;position:relative;}
+  .profile-hero .av{width:60px;height:60px;border-radius:50%;background:var(--navy-elev);border:2px solid var(--accent);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:20px;color:var(--white);}
+  .profile-hero .nm{font-weight:700;font-size:14.5px;}
+  .profile-hero .ph{font-size:10.5px;color:var(--accent);margin-top:4px;font-family:'Poppins',sans-serif;letter-spacing:.08em;}
+  .fieldgroup{margin:14px 18px 0;background:var(--navy-card);border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+  .fieldrow{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--line);font-size:12px;}
+  .fieldrow .k{color:var(--muted);}
+  .fieldrow .v{font-weight:600;}
+  .fieldrow:last-child{border-bottom:none;}
+  .cta-plan{margin:20px 18px 0;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:14px;padding:15px;text-align:center;color:var(--navy-deep);font-weight:700;font-size:13px;cursor:pointer;}
+  .logoutrow{margin:14px 18px 0;text-align:center;padding:13px;border-radius:12px;border:1px solid var(--line);color:var(--danger);font-size:12.5px;font-weight:700;cursor:pointer;}
+
+  /* FREE TRAINING */
+  .cat-list{padding:0 18px;display:flex;flex-direction:column;gap:10px;}
+  .catrow{padding:14px 16px;display:flex;align-items:center;gap:12px;}
+  .catrow .ic{width:36px;height:36px;border-radius:10px;background:rgba(232,130,95,.15);display:flex;align-items:center;justify-content:center;flex:none;}
+  .catrow .ic svg{width:17px;height:17px;stroke:var(--accent);}
+  .catrow .ti{font-weight:700;font-size:13px;flex:1;}
+  .catrow .chev{width:14px;height:14px;stroke:var(--muted);}
+
+  /* QUIZ / MISSION shared simple */
+  .simplebox{margin:0 18px;padding:20px;text-align:center;}
+  .bignum{font-family:'Poppins',sans-serif;font-size:34px;font-weight:800;color:var(--accent);}
+  .optrow{display:flex;gap:8px;margin-top:14px;}
+  .opt{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);font-size:12px;text-align:center;color:var(--ice);cursor:pointer;}
+  .opt.sel{border-color:var(--accent);color:var(--white);background:rgba(232,130,95,.1);}
+  .primarybtn{margin-top:16px;background:var(--accent);color:var(--navy-deep);font-weight:700;font-size:13px;padding:12px;border-radius:12px;text-align:center;cursor:pointer;}
+  .primarybtn.ghost{background:transparent;border:1px solid var(--line);color:var(--ice);}
+
+  /* HUB SCREENS (インプット / アウトプット) */
+  .hubhero{margin:0 18px;padding:18px 16px;position:relative;overflow:hidden;border:1px solid var(--accent);}
+  .hubhero .eyebrow{font-family:'Poppins',sans-serif;font-size:10px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;font-weight:700;}
+  .hubhero .htitle{font-weight:900;font-size:15px;margin-top:6px;}
+  .hubhero .hdesc{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.6;}
+  .hubhero .harrow{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;}
+  .hubhero .harrow svg{width:14px;height:14px;stroke:var(--navy-deep);}
+  .hubstat{margin:0 18px;padding:14px 16px;display:flex;align-items:center;gap:14px;}
+  .hubstat .ring{width:46px;height:46px;flex:none;}
+  .hubstat .ring span{font-size:10px;}
+  .hubstat .txt{flex:1;}
+  .hubstat .txt .k{font-size:10.5px;color:var(--muted);}
+  .hubstat .txt .v{font-size:13px;font-weight:700;margin-top:2px;}
+  .hubrow{padding:13px 15px;display:flex;align-items:center;gap:12px;}
+  .hubrow .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none;}
+  .hubrow .ic svg{width:16px;height:16px;stroke:var(--accent);}
+  .hubrow .body{flex:1;}
+  .hubrow .ti{font-weight:700;font-size:12.5px;}
+  .hubrow .badge{display:inline-block;margin-top:4px;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:8px;}
+  .hubrow .badge.todo{background:rgba(232,130,95,.16);color:var(--accent);}
+  .hubrow .badge.done{background:rgba(76,140,107,.18);color:#8FBF9F;}
+  .hubrow .badge.info{background:rgba(255,255,255,.08);color:var(--ice);}
+  .hubrow .chev{width:14px;height:14px;stroke:var(--muted);flex:none;}
+
+  /* ===== AUTH / SPLASH / ONBOARDING ===== */
+  .authwrap{padding:38px 22px 24px;display:flex;flex-direction:column;height:100%;}
+  .authmark{width:64px;height:64px;border-radius:18px;background:var(--navy-card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+  .authmark svg{width:32px;height:32px;}
+  .authtitle{text-align:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;}
+  .authsub{text-align:center;font-size:11.5px;color:var(--muted);margin-top:6px;}
+  .authtabs{display:flex;gap:6px;margin:22px 0 20px;background:var(--navy-card);border:1px solid var(--line);border-radius:12px;padding:4px;}
+  .authtab{flex:1;text-align:center;padding:9px;border-radius:9px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;}
+  .authtab.active{background:var(--accent);color:var(--navy-deep);}
+  .fieldlabel{font-size:11px;color:var(--muted);margin:14px 2px 6px;font-family:'Poppins',sans-serif;letter-spacing:.03em;}
+  .fieldinput{background:var(--navy-card);border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:13px;color:var(--white);}
+  .fieldinput.placeholder{color:var(--muted);}
+  .authcheck{display:flex;align-items:center;gap:8px;margin-top:16px;font-size:11px;color:var(--muted);}
+  .authcheck .box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--accent);background:rgba(232,130,95,.15);flex:none;}
+  .authcta{margin-top:20px;background:var(--accent);color:var(--navy-deep);text-align:center;font-weight:700;font-size:13.5px;padding:13px;border-radius:12px;cursor:pointer;}
+  .authswitch{text-align:center;font-size:11.5px;color:var(--muted);margin-top:16px;}
+  .authswitch b{color:var(--accent);cursor:pointer;}
+
+  .splashwrap{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:0 30px;text-align:center;}
+  .splashmark{width:96px;height:96px;border-radius:26px;background:var(--navy-card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;}
+  .splashmark svg{width:48px;height:48px;}
+  .splashtag{font-size:12.5px;color:var(--ice);line-height:1.7;}
+  .splashcta{width:100%;background:var(--accent);color:var(--navy-deep);text-align:center;font-weight:700;font-size:13.5px;padding:14px;border-radius:12px;cursor:pointer;}
+  .splashghost{font-size:11.5px;color:var(--muted);cursor:pointer;}
+  .splashghost b{color:var(--accent);}
+
+  .obprogress{padding:14px 18px 4px;}
+  .obbarwrap{display:flex;gap:4px;}
+  .obseg{flex:1;height:4px;border-radius:3px;background:var(--navy-card);}
+  .obseg.done{background:var(--accent);}
+  .obstep-label{font-family:'Poppins',sans-serif;font-size:10px;color:var(--muted);letter-spacing:.1em;margin-top:8px;text-transform:uppercase;}
+  .obtitle{font-family:'Noto Sans JP',sans-serif;font-weight:900;font-size:19px;margin:14px 18px 4px;}
+  .obsub{font-size:11.5px;color:var(--muted);margin:0 18px 18px;line-height:1.6;}
+  .obfield{margin:0 18px 14px;}
+  .obfield .lb{font-size:11px;color:var(--muted);margin-bottom:6px;font-family:'Poppins',sans-serif;}
+  .obfield .box{background:var(--navy-card);border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:12.5px;color:var(--white);line-height:1.6;}
+  input.box, textarea.box{width:100%;font-family:'Noto Sans JP',sans-serif;outline:none;resize:none;-webkit-appearance:none;appearance:none;}
+  input.box:focus, textarea.box:focus{border-color:var(--accent);}
+  .permrow{padding:15px;display:flex;align-items:center;gap:13px;}
+  .permrow .ic{width:38px;height:38px;border-radius:11px;background:rgba(232,130,95,.15);display:flex;align-items:center;justify-content:center;flex:none;}
+  .permrow .ic svg{width:18px;height:18px;stroke:var(--accent);}
+  .permrow .body{flex:1;}
+  .permrow .ti{font-weight:700;font-size:12.5px;}
+  .permrow .de{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.5;}
+  .permbtn{font-size:10.5px;font-weight:700;padding:8px 12px;border-radius:20px;flex:none;text-align:center;}
+  .permbtn.off{background:var(--accent);color:var(--navy-deep);}
+  .permbtn.on{background:rgba(76,140,107,.18);color:#8FBF9F;border:1px solid var(--pine);}
+  .chiprow{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{padding:8px 14px;border-radius:20px;border:1px solid var(--line);font-size:11.5px;color:var(--ice);cursor:pointer;}
+  .chip.sel{background:rgba(232,130,95,.15);border-color:var(--accent);color:var(--white);}
+  .obfooter{margin:20px 18px 0;display:flex;gap:10px;}
+  .obfooter .primarybtn{flex:1;margin:0;}
+
+  .obdone-wrap{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:0 30px;text-align:center;}
+  .obdone-mark{width:88px;height:88px;border-radius:50%;background:linear-gradient(145deg,var(--accent),var(--accent-deep));display:flex;align-items:center;justify-content:center;}
+  .obdone-mark svg{width:38px;height:38px;stroke:var(--navy-deep);}
+  .obdone-title{font-family:'Noto Sans JP',sans-serif;font-weight:900;font-size:19px;}
+  .obdone-sub{font-size:12px;color:var(--muted);line-height:1.7;}
+
+  /* logout sheet */
+  .sheetoverlay{position:absolute;inset:0;background:rgba(3,11,20,.6);display:flex;align-items:flex-end;z-index:80;}
+  .sheet{width:100%;background:var(--navy);border-radius:20px 20px 0 0;padding:22px 20px 26px;border-top:1px solid var(--line);}
+  .sheet .ti{font-weight:700;font-size:14.5px;text-align:center;}
+  .sheet .de{font-size:11.5px;color:var(--muted);text-align:center;margin-top:6px;line-height:1.6;}
+  .sheet .rowbtn{display:flex;gap:10px;margin-top:18px;}
+  .sheet .rowbtn div{flex:1;text-align:center;padding:12px;border-radius:12px;font-size:12.5px;font-weight:700;cursor:pointer;}
+  .sheet .cancel{border:1px solid var(--line);color:var(--ice);}
+  .sheet .confirm{background:var(--danger);color:var(--navy-deep);}
+</style>
 </head>
-
 <body>
 
-    <div class="stage">
-        <div class="phone">
-            <div class="notch"></div>
-            <div class="statusbar"><span>9:41</span><span id="statustitle"></span></div>
-            <div class="screen" id="screen"></div>
-            <div class="bottomnav" id="bottomnav"></div>
-        </div>
-    </div>
+<div class="stage">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span id="statustitle"></span></div>
+    <div class="screen" id="screen"></div>
+    <div class="bottomnav" id="bottomnav"></div>
+  </div>
+</div>
 
-    <script>
-        const icons = {
-            input: `<svg viewBox="0 0 24 24" fill="none"><path d="M4 19V6a2 2 0 0 1 2-2h9l5 5v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" stroke-width="1.6"/><path d="M15 4v5h5" stroke-width="1.6"/></svg>`,
-            mic: `<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" stroke-width="1.6"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke-width="1.6"/></svg>`,
-            free: `<svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke-width="1.6"/></svg>`,
-            book: `<svg viewBox="0 0 24 24" fill="none"><path d="M4 5a2 2 0 0 1 2-2h5v18H6a2 2 0 0 1-2-2Z" stroke-width="1.6"/><path d="M20 5a2 2 0 0 0-2-2h-5v18h5a2 2 0 0 0 2-2Z" stroke-width="1.6"/></svg>`,
-            quiz: `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke-width="1.6"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 1-1 1.9" stroke-width="1.6"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/></svg>`,
-            flag: `<svg viewBox="0 0 24 24" fill="none"><path d="M6 21V4m0 1h11l-3 4 3 4H6" stroke-width="1.6"/></svg>`,
-            chart: `<svg viewBox="0 0 24 24" fill="none"><path d="M5 19V9M12 19V5M19 19v-7" stroke-width="1.8"/></svg>`,
-            lockicon: `<svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="9" rx="2" stroke-width="1.6"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-width="1.6"/></svg>`,
-            user: `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke-width="1.6"/><path d="M4 20c1.5-4.5 5-6 8-6s6.5 1.5 8 6" stroke-width="1.6"/></svg>`,
-            eye: `<svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" stroke-width="1.6"/><circle cx="12" cy="12" r="2.5" stroke-width="1.6"/></svg>`,
-            play: `<svg viewBox="0 0 24 24" fill="none"><path d="M6 4l14 8-14 8Z" stroke-width="1.6"/></svg>`,
-            check: `<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke-width="2"/></svg>`,
-            back: `<svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke-width="2"/></svg>`,
-            chev: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="stroke:var(--muted);flex:none;display:block;"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-            mountain: `<svg viewBox="0 0 24 24" fill="none"><path d="M3 18h18L15 6l-3 3.5L9 6 3 18Z" fill="#FFFFFF"/></svg>`,
-            mountainBig: `<svg viewBox="0 0 48 48" fill="none"><path d="M6 36h36L30 12l-6 7L18 12 6 36Z" fill="#FFFFFF"/></svg>`,
-            shadow: `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke-width="1.6"/><path d="M8 8l8 8M16 8l-8 8" stroke-width="1.6"/></svg>`,
-            roleplay: `<svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="3" stroke-width="1.6"/><circle cx="17" cy="9" r="2.4" stroke-width="1.6"/><path d="M3 20c0-3.3 2.5-5.5 5.5-5.5S14 16.7 14 20M14.5 20c0-2.6 1.8-4.3 4-4.3" stroke-width="1.6"/></svg>`,
-            flagBig: `<svg viewBox="0 0 48 48" fill="none"><path d="M14 42V6m0 2h22l-6 8 6 8H14" stroke-width="2.4"/></svg>`,
-        };
+<script>
+const icons = {
+  input:`<svg viewBox="0 0 24 24" fill="none"><path d="M4 19V6a2 2 0 0 1 2-2h9l5 5v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" stroke-width="1.6"/><path d="M15 4v5h5" stroke-width="1.6"/></svg>`,
+  mic:`<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" stroke-width="1.6"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke-width="1.6"/></svg>`,
+  free:`<svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke-width="1.6"/></svg>`,
+  book:`<svg viewBox="0 0 24 24" fill="none"><path d="M4 5a2 2 0 0 1 2-2h5v18H6a2 2 0 0 1-2-2Z" stroke-width="1.6"/><path d="M20 5a2 2 0 0 0-2-2h-5v18h5a2 2 0 0 0 2-2Z" stroke-width="1.6"/></svg>`,
+  quiz:`<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke-width="1.6"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 1-1 1.9" stroke-width="1.6"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/></svg>`,
+  flag:`<svg viewBox="0 0 24 24" fill="none"><path d="M6 21V4m0 1h11l-3 4 3 4H6" stroke-width="1.6"/></svg>`,
+  chart:`<svg viewBox="0 0 24 24" fill="none"><path d="M5 19V9M12 19V5M19 19v-7" stroke-width="1.8"/></svg>`,
+  lockicon:`<svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="9" rx="2" stroke-width="1.6"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-width="1.6"/></svg>`,
+  user:`<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke-width="1.6"/><path d="M4 20c1.5-4.5 5-6 8-6s6.5 1.5 8 6" stroke-width="1.6"/></svg>`,
+  eye:`<svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" stroke-width="1.6"/><circle cx="12" cy="12" r="2.5" stroke-width="1.6"/></svg>`,
+  play:`<svg viewBox="0 0 24 24" fill="none"><path d="M6 4l14 8-14 8Z" stroke-width="1.6"/></svg>`,
+  check:`<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke-width="2"/></svg>`,
+  back:`<svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke-width="2"/></svg>`,
+  chev:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="stroke:var(--muted);flex:none;display:block;"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  mountain:`<svg viewBox="0 0 24 24" fill="none"><path d="M3 18h18L15 6l-3 3.5L9 6 3 18Z" fill="#FFFFFF"/></svg>`,
+  mountainBig:`<svg viewBox="0 0 48 48" fill="none"><path d="M6 36h36L30 12l-6 7L18 12 6 36Z" fill="#FFFFFF"/></svg>`,
+  speaker:`<svg viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 4V5L8 9H4Z" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 9a4 4 0 0 1 0 6" stroke-width="1.6" stroke-linecap="round"/><path d="M18.5 6.5a8 8 0 0 1 0 11" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  shadow:`<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke-width="1.6"/><path d="M8 8l8 8M16 8l-8 8" stroke-width="1.6"/></svg>`,
+  roleplay:`<svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="3" stroke-width="1.6"/><circle cx="17" cy="9" r="2.4" stroke-width="1.6"/><path d="M3 20c0-3.3 2.5-5.5 5.5-5.5S14 16.7 14 20M14.5 20c0-2.6 1.8-4.3 4-4.3" stroke-width="1.6"/></svg>`,
+  flagBig:`<svg viewBox="0 0 48 48" fill="none"><path d="M14 42V6m0 2h22l-6 8 6 8H14" stroke-width="2.4"/></svg>`,
+};
 
-        const ridgeSVG = `<svg class="ridge-svg" viewBox="0 0 350 90" preserveAspectRatio="none"><polygon points="0,90 40,55 80,70 120,30 160,50 200,15 240,45 280,25 320,60 350,40 350,90" fill="url(#g1)" opacity="0.9"/><polyline points="0,90 40,55 80,70 120,30 160,50 200,15 240,45 280,25 320,60 350,40" fill="none" stroke="#E8825F" stroke-width="2" opacity="0.85"/><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1D4A73"/><stop offset="100%" stop-color="#0B2338"/></linearGradient></defs></svg>`;
-        const unitmapRidge = `<svg class="unitmap-ridge" viewBox="0 0 200 500" preserveAspectRatio="none"><path d="M100,500 C60,420 140,380 90,300 C50,240 150,190 100,120 C70,80 130,40 100,0" stroke="#1D4A73" stroke-width="30" fill="none" stroke-linecap="round" opacity="0.5"/></svg>`;
+const ridgeSVG = `<svg class="ridge-svg" viewBox="0 0 350 90" preserveAspectRatio="none"><polygon points="0,90 40,55 80,70 120,30 160,50 200,15 240,45 280,25 320,60 350,40 350,90" fill="url(#g1)" opacity="0.9"/><polyline points="0,90 40,55 80,70 120,30 160,50 200,15 240,45 280,25 320,60 350,40" fill="none" stroke="#E8825F" stroke-width="2" opacity="0.85"/><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1D4A73"/><stop offset="100%" stop-color="#0B2338"/></linearGradient></defs></svg>`;
+const unitmapRidge = `<svg class="unitmap-ridge" viewBox="0 0 200 500" preserveAspectRatio="none"><path d="M100,500 C60,420 140,380 90,300 C50,240 150,190 100,120 C70,80 130,40 100,0" stroke="#1D4A73" stroke-width="30" fill="none" stroke-linecap="round" opacity="0.5"/></svg>`;
 
-        const markHTML = `<div class="mark" data-nav="home" title="ホームへ">${icons.mountain}</div>`;
+const markHTML = `<div class="mark" data-nav="home" title="ホームへ">${icons.mountain}</div>`;
 
-        function topbar(title, { back } = {}) {
-            return `<div class="topbar">
+function topbar(title, {back}={}){
+  return `<div class="topbar">
     <div class="left">
-      ${back ? `<div class="backbtn" data-nav="${back}">${icons.back}</div>` : markHTML}
+      ${back? `<div class="backbtn" data-nav="${back}">${icons.back}</div>` : markHTML}
       <div class="screentitle">${title}</div>
     </div>
-    <div class="avatar" data-nav="mypage">健</div>
+    <div class="avatar" data-nav="mypage">${profile.name.charAt(0)}</div>
   </div>`;
-        }
+}
 
-        const bottomNavHTML = (active) => `
-  <div class="navitem ${active === 'home' ? 'active' : ''}" data-nav="home">${icons.free}<span>トレーニング</span></div>
-  <div class="navitem ${active === 'records' ? 'active' : ''}" data-nav="records">${icons.chart}<span>記録</span></div>
+const bottomNavHTML = (active)=>`
+  <div class="navitem ${active==='home'?'active':''}" data-nav="home">${icons.free}<span>トレーニング</span></div>
+  <div class="navitem ${active==='records'?'active':''}" data-nav="records">${icons.chart}<span>記録</span></div>
   <div class="navitem" data-locked="1">${icons.lockicon}<span class="lockdot"></span><span>Weekly</span><div class="navtooltip">あと3日で解放されます</div></div>
-  <div class="navitem ${active === 'mypage' ? 'active' : ''}" data-nav="mypage">${icons.user}<span>マイページ</span></div>
+  <div class="navitem ${active==='mypage'?'active':''}" data-nav="mypage">${icons.user}<span>マイページ</span></div>
 `;
 
-        // ---- app state (demo only) ----
-        let state = {
-            authTab: 'signup',      // 'signup' | 'login'
-            profileComplete: false,
-            mypageLogoutOpen: false,
-            chipSel: {},            // per-field chip selection overrides
-        };
+// ---- app state (demo only) ----
+let state = {
+  authTab: 'signup',      // 'signup' | 'login'
+  profileComplete: false,
+  mypageLogoutOpen: false,
+  permMic: false,
+  permSpeaker: false,
+};
 
-        function field(label, value) {
-            return `<div class="fieldlabel">${label}</div><div class="fieldinput">${value}</div>`;
-        }
+// ---- profile (this is what onboarding writes to, and マイページ reads from) ----
+let profile = {
+  name:'佐藤 健太', gender:'男性', age:'34', voiceGender:'女性',
+  job:'営業', position:'マネージャー', jobDetail:'法人向けSaaSの新規営業を担当。海外拠点とのやり取りも増えている。',
+  personality:'負けず嫌いで慎重派。準備をしっかりするタイプ。', hobby:'ゴルフ、読書', career:'新卒でメーカー営業に入社、現職6年目。',
+  successStory:'海外拠点との合弁交渉を英語でまとめた経験がある。', strengths:'強み：粘り強さ／弱み：とっさの英語対応',
+  futureCareer:'海外営業部門のマネージャーになりたい。', workChallenge:'商談を通訳なしで英語のみで完結させたい。',
+  termGoal:'商談を英語で完結',
+};
 
-        // ---- onboarding step data ----
-        const onboardSteps = [
-            {
-                key: 'ob1', label: 'STEP 1 / 5', title: 'まずはあなたについて', sub: 'プロフィールはAIが教材を作る土台になります。後からいつでも編集できます。',
-                fields: [
-                    { type: 'text', label: 'お名前', value: '佐藤 健太' },
-                    { type: 'chips', label: '性別', options: ['男性', '女性', '回答しない'], sel: '男性' },
-                    { type: 'text', label: '年齢', value: '34' },
-                    { type: 'chips', label: '読み上げ音声の性別', options: ['男性', '女性'], sel: '女性' },
-                ]
-            },
-            {
-                key: 'ob2', label: 'STEP 2 / 5', title: 'お仕事について', sub: '業種・役職に合わせたビジネスシーン教材を自動生成します。',
-                fields: [
-                    { type: 'text', label: '職業', value: '営業' },
-                    { type: 'text', label: '職位', value: 'マネージャー' },
-                    { type: 'textarea', label: '職業詳細', value: '法人向けSaaSの新規営業を担当。海外拠点とのやり取りも増えている。' },
-                ]
-            },
-            {
-                key: 'ob3', label: 'STEP 3 / 5', title: 'あなたの人物像', sub: '性格や経歴を伝えるほど、自然な会話設問が作れます。',
-                fields: [
-                    { type: 'textarea', label: '性格', value: '負けず嫌いで慎重派。準備をしっかりするタイプ。' },
-                    { type: 'text', label: '趣味', value: 'ゴルフ、読書' },
-                    { type: 'textarea', label: '経歴', value: '新卒でメーカー営業に入社、現職6年目。' },
-                ]
-            },
-            {
-                key: 'ob4', label: 'STEP 4 / 5', title: '強み・実績', sub: '成功体験は、自信を持って話せる教材のネタになります。',
-                fields: [
-                    { type: 'textarea', label: '成功体験', value: '海外拠点との合弁交渉を英語でまとめた経験がある。' },
-                    { type: 'textarea', label: '強み・弱み', value: '強み：粘り強さ／弱み：とっさの英語対応' },
-                ]
-            },
-            {
-                key: 'ob5', label: 'STEP 5 / 5', title: 'このタームの目標', sub: 'ここが今回のゴールです。ダッシュボードの目標としても表示されます。',
-                fields: [
-                    { type: 'textarea', label: 'キャリア（将来像）', value: '海外営業部門のマネージャーになりたい。' },
-                    { type: 'textarea', label: '仕事課題', value: '商談を通訳なしで英語のみで完結させたい。' },
-                    { type: 'text', label: '今タームの目標', value: '商談を英語で完結' },
-                ]
-            },
-        ];
+function field(label, value){
+  return `<div class="fieldlabel">${label}</div><div class="fieldinput">${value}</div>`;
+}
 
-        function renderObField(f, idx) {
-            if (f.type === 'chips') {
-                const sel = state.chipSel[f.label] || f.sel;
-                return `<div class="obfield"><div class="lb">${f.label}</div>
-      <div class="chiprow" data-chipgroup="${f.label}">
-        ${f.options.map(o => `<div class="chip ${o === sel ? 'sel' : ''}" data-chip="${f.label}|${o}">${o}</div>`).join('')}
+// ---- onboarding step data (also reused by the マイページ編集 screen) ----
+const onboardSteps = [
+  { key:'ob1', title:'まずはあなたについて', sub:'プロフィールはAIが教材を作る土台になります。後からいつでも編集できます。',
+    fields:[
+      {type:'text', field:'name', label:'お名前'},
+      {type:'chips', field:'gender', label:'性別', options:['男性','女性','回答しない']},
+      {type:'text', field:'age', label:'年齢'},
+      {type:'chips', field:'voiceGender', label:'読み上げ音声の性別', options:['男性','女性']},
+    ]},
+  { key:'ob2', title:'お仕事について', sub:'業種・役職に合わせたビジネスシーン教材を自動生成します。',
+    fields:[
+      {type:'text', field:'job', label:'職業'},
+      {type:'text', field:'position', label:'職位'},
+      {type:'textarea', field:'jobDetail', label:'職業詳細'},
+    ]},
+  { key:'ob3', title:'あなたの人物像', sub:'性格や経歴を伝えるほど、自然な会話設問が作れます。',
+    fields:[
+      {type:'textarea', field:'personality', label:'性格'},
+      {type:'text', field:'hobby', label:'趣味'},
+      {type:'textarea', field:'career', label:'経歴'},
+    ]},
+  { key:'ob4', title:'強み・実績', sub:'成功体験は、自信を持って話せる教材のネタになります。',
+    fields:[
+      {type:'textarea', field:'successStory', label:'成功体験'},
+      {type:'textarea', field:'strengths', label:'強み・弱み'},
+    ]},
+  { key:'ob5', title:'このタームの目標', sub:'ここが今回のゴールです。ダッシュボードの目標としても表示されます。',
+    fields:[
+      {type:'textarea', field:'futureCareer', label:'キャリア（将来像）'},
+      {type:'textarea', field:'workChallenge', label:'仕事課題'},
+      {type:'text', field:'termGoal', label:'今タームの目標'},
+    ]},
+];
+
+function renderObField(f){
+  if(f.type === 'chips'){
+    const sel = profile[f.field];
+    return `<div class="obfield"><div class="lb">${f.label}</div>
+      <div class="chiprow">
+        ${f.options.map(o=>`<div class="chip ${o===sel?'sel':''}" data-chip="${f.field}|${o}">${o}</div>`).join('')}
       </div></div>`;
-            }
-            return `<div class="obfield"><div class="lb">${f.label}</div><div class="box">${f.value}</div></div>`;
-        }
+  }
+  if(f.type === 'textarea'){
+    return `<div class="obfield"><div class="lb">${f.label}</div><textarea class="box" rows="2" data-field="${f.field}">${profile[f.field]}</textarea></div>`;
+  }
+  return `<div class="obfield"><div class="lb">${f.label}</div><input class="box" type="text" data-field="${f.field}" value="${profile[f.field]}"></div>`;
+}
 
-        function renderOnboard(stepIdx) {
-            const step = onboardSteps[stepIdx];
-            const total = onboardSteps.length;
-            const backKey = stepIdx === 0 ? 'auth' : onboardSteps[stepIdx - 1].key;
-            const nextKey = stepIdx === total - 1 ? 'obdone' : onboardSteps[stepIdx + 1].key;
-            return `
+const TOTAL_OB_STEPS = 6; // 5 profile steps + 1 permission step
+
+function renderOnboard(stepIdx){
+  const step = onboardSteps[stepIdx];
+  const total = onboardSteps.length;
+  const backKey = stepIdx===0 ? 'auth' : onboardSteps[stepIdx-1].key;
+  const nextKey = stepIdx===total-1 ? 'obperm' : onboardSteps[stepIdx+1].key;
+  return `
     <div class="obprogress">
-      <div class="obbarwrap">${Array.from({ length: total }).map((_, i) => `<div class="obseg ${i <= stepIdx ? 'done' : ''}"></div>`).join('')}</div>
-      <div class="obstep-label">${step.label}</div>
+      <div class="obbarwrap">${Array.from({length:TOTAL_OB_STEPS}).map((_,i)=>`<div class="obseg ${i<=stepIdx?'done':''}"></div>`).join('')}</div>
+      <div class="obstep-label">STEP ${stepIdx+1} / ${TOTAL_OB_STEPS}</div>
     </div>
     <div class="obtitle">${step.title}</div>
     <div class="obsub">${step.sub}</div>
-    ${step.fields.map(f => renderObField(f)).join('')}
+    ${step.fields.map(f=>renderObField(f)).join('')}
     <div class="obfooter">
       <div class="primarybtn ghost tap" data-nav="${backKey}" style="flex:0 0 84px;">戻る</div>
-      <div class="primarybtn tap" data-nav="${nextKey}">${stepIdx === total - 1 ? '完了する' : '次へ'}</div>
+      <div class="primarybtn tap" data-nav="${nextKey}">次へ</div>
     </div>
   `;
-        }
+}
 
-        const screens = {
+function renderMypageEdit(){
+  return `
+    ${topbar('プロフィール編集',{back:'mypage'})}
+    ${onboardSteps.map(step=>`
+      <div class="section-title">${step.title}</div>
+      ${step.fields.map(f=>renderObField(f)).join('')}
+    `).join('')}
+    <div class="obfooter" style="margin:20px 18px 30px;">
+      <div class="primarybtn tap" style="flex:1;" data-nav="mypage">保存して戻る</div>
+    </div>
+  `;
+}
 
-            splash: {
-                nav: null, title: '', html: () => `
+const screens = {
+
+splash:{ nav:null, title:'', html:()=>`
   <div class="splashwrap">
     <div class="splashmark">${icons.mountainBig}</div>
     <div>
@@ -1801,37 +470,60 @@
   </div>
 `},
 
-            auth: {
-                nav: null, title: '', html: () => `
+auth:{ nav:null, title:'', html:()=>`
   <div class="authwrap">
     <div class="authmark">${icons.mountain}</div>
-    <div class="authtitle">${state.authTab === 'signup' ? 'はじめまして' : 'おかえりなさい'}</div>
-    <div class="authsub">${state.authTab === 'signup' ? 'アカウントを作成して、登頂を始めましょう' : 'ログインして続きから登りましょう'}</div>
+    <div class="authtitle">${state.authTab==='signup' ? 'はじめまして' : 'おかえりなさい'}</div>
+    <div class="authsub">${state.authTab==='signup' ? 'アカウントを作成して、登頂を始めましょう' : 'ログインして続きから登りましょう'}</div>
     <div class="authtabs">
-      <div class="authtab ${state.authTab === 'login' ? 'active' : ''}" data-action="authtab-login">ログイン</div>
-      <div class="authtab ${state.authTab === 'signup' ? 'active' : ''}" data-action="authtab-signup">新規登録</div>
+      <div class="authtab ${state.authTab==='login'?'active':''}" data-action="authtab-login">ログイン</div>
+      <div class="authtab ${state.authTab==='signup'?'active':''}" data-action="authtab-signup">新規登録</div>
     </div>
-    ${field('メールアドレス', 'kenta.sato@example.com')}
-    ${field('パスワード', '••••••••')}
-    ${state.authTab === 'signup' ? field('パスワード（確認）', '••••••••') : ''}
-    ${state.authTab === 'signup' ? `<div class="authcheck"><div class="box"></div>利用規約・プライバシーポリシーに同意する</div>` : `<div class="authswitch" style="text-align:right;margin-top:10px;">パスワードをお忘れですか？</div>`}
-    <div class="authcta tap" data-nav="${state.authTab === 'signup' ? 'ob_start' : 'login_go_home'}">${state.authTab === 'signup' ? 'アカウントを作成' : 'ログイン'}</div>
+    ${field('メールアドレス','kenta.sato@example.com')}
+    ${field('パスワード','••••••••')}
+    ${state.authTab==='signup' ? field('パスワード（確認）','••••••••') : ''}
+    ${state.authTab==='signup' ? `<div class="authcheck"><div class="box"></div>利用規約・プライバシーポリシーに同意する</div>` : `<div class="authswitch" style="text-align:right;margin-top:10px;">パスワードをお忘れですか？</div>`}
+    <div class="authcta tap" data-nav="${state.authTab==='signup' ? 'ob_start' : 'login_go_home'}">${state.authTab==='signup' ? 'アカウントを作成' : 'ログイン'}</div>
     <div class="authswitch">
-      ${state.authTab === 'signup'
-                        ? `すでにアカウントをお持ちの方は <b data-action="authtab-login">ログイン</b>`
-                        : `はじめて利用する方は <b data-action="authtab-signup">新規登録</b>`}
+      ${state.authTab==='signup'
+        ? `すでにアカウントをお持ちの方は <b data-action="authtab-login">ログイン</b>`
+        : `はじめて利用する方は <b data-action="authtab-signup">新規登録</b>`}
     </div>
   </div>
 `},
 
-            ob1: { nav: null, title: '', html: () => renderOnboard(0) },
-            ob2: { nav: null, title: '', html: () => renderOnboard(1) },
-            ob3: { nav: null, title: '', html: () => renderOnboard(2) },
-            ob4: { nav: null, title: '', html: () => renderOnboard(3) },
-            ob5: { nav: null, title: '', html: () => renderOnboard(4) },
+ob1:{ nav:null, title:'', html:()=>renderOnboard(0) },
+ob2:{ nav:null, title:'', html:()=>renderOnboard(1) },
+ob3:{ nav:null, title:'', html:()=>renderOnboard(2) },
+ob4:{ nav:null, title:'', html:()=>renderOnboard(3) },
+ob5:{ nav:null, title:'', html:()=>renderOnboard(4) },
 
-            obdone: {
-                nav: null, title: '', html: () => `
+obperm:{ nav:null, title:'', html:()=>`
+  <div class="obprogress">
+    <div class="obbarwrap">${Array.from({length:TOTAL_OB_STEPS}).map(()=>`<div class="obseg done"></div>`).join('')}</div>
+    <div class="obstep-label">STEP 6 / 6</div>
+  </div>
+  <div class="obtitle">マイクとスピーカーを許可</div>
+  <div class="obsub">発話課題の録音と、お手本音声の再生に使います。後から端末の設定でも変更できます。</div>
+  <div class="card" style="margin:0 18px;">
+    <div class="permrow">
+      <div class="ic">${icons.mic}</div>
+      <div class="body"><div class="ti">マイク</div><div class="de">発話課題・フリー練習の録音に使用</div></div>
+      <div class="permbtn ${state.permMic?'on':'off'} tap" data-action="grant-mic">${state.permMic?'許可済み ✓':'許可する'}</div>
+    </div>
+    <div class="permrow" style="border-top:1px solid var(--line);">
+      <div class="ic">${icons.speaker}</div>
+      <div class="body"><div class="ti">スピーカー</div><div class="de">音声教材・お手本音声の再生に使用</div></div>
+      <div class="permbtn ${state.permSpeaker?'on':'off'} tap" data-action="grant-speaker">${state.permSpeaker?'許可済み ✓':'許可する'}</div>
+    </div>
+  </div>
+  <div class="obfooter">
+    <div class="primarybtn ghost tap" data-nav="ob5" style="flex:0 0 84px;">戻る</div>
+    <div class="primarybtn tap" data-nav="obdone">次へ</div>
+  </div>
+`},
+
+obdone:{ nav:null, title:'', html:()=>`
   <div class="obdone-wrap">
     <div class="obdone-mark">${icons.flagBig}</div>
     <div class="obdone-title">ベースキャンプ設営完了</div>
@@ -1840,8 +532,7 @@
   </div>
 `},
 
-            home: {
-                nav: 'home', title: '', html: () => `
+home:{ nav:'home', title:'', html:()=>`
   ${topbar('')}
   ${!state.profileComplete ? `<div class="warnbanner" data-nav="mypage">${icons.lockicon}<span><b>プロフィールが未完成です。</b> 登頂ルートを最適化するため入力をお願いします。</span></div>` : ''}
   <div class="card tap ascent-wrap" data-nav="input_hub">
@@ -1866,9 +557,8 @@
   </div>
 `},
 
-            input_hub: {
-                nav: 'home', title: 'インプット', html: () => `
-  ${topbar('インプット', { back: 'home' })}
+input_hub:{ nav:'home', title:'インプット', html:()=>`
+  ${topbar('インプット',{back:'home'})}
   <div class="section-title">次はこれ</div>
   <div class="card tap hubhero" data-nav="unitmap">
     <div class="eyebrow">初級文法トレーニング · UNIT 10</div>
@@ -1896,9 +586,8 @@
   </div>
 `},
 
-            unitdrill: {
-                nav: 'home', title: '学習履歴', html: () => `
-  ${topbar('学習履歴 · UNIT 10', { back: 'unitmap' })}
+unitdrill:{ nav:'home', title:'学習履歴', html:()=>`
+  ${topbar('学習履歴 · UNIT 10',{back:'unitmap'})}
   <div class="optrow" data-group="daytab" style="padding:0 18px;">
     <div class="opt sel">DAY1</div><div class="opt">DAY2</div><div class="opt">DAY3</div><div class="opt">DAY4</div><div class="opt">DAY5</div>
   </div>
@@ -1915,9 +604,8 @@
   </div>
 `},
 
-            weekly: {
-                nav: 'home', title: 'Weekly教材', html: () => `
-  ${topbar('Weekly教材', { back: 'input_hub' })}
+weekly:{ nav:'home', title:'Weekly教材', html:()=>`
+  ${topbar('Weekly教材',{back:'input_hub'})}
   <div class="optrow" data-group="weeklyfilter" style="padding:0 18px;">
     <div class="opt sel">全て</div><div class="opt">実施済</div><div class="opt">未実施</div>
   </div>
@@ -1928,9 +616,8 @@
   </div>
 `},
 
-            situational: {
-                nav: 'home', title: 'シチュエーション別教材', html: () => `
-  ${topbar('シチュエーション別教材', { back: 'input_hub' })}
+situational:{ nav:'home', title:'シチュエーション別教材', html:()=>`
+  ${topbar('シチュエーション別教材',{back:'input_hub'})}
   <div class="section-title">シーンを選んで生成（本日あと1回）</div>
   <div class="cat-list">
     <div class="card catrow tap" data-nav="output"><div class="ic">${icons.roleplay}</div><div class="ti">社内ミーティング</div>${icons.chev}</div>
@@ -1941,9 +628,8 @@
   <div class="section-title">過去に生成した教材<a data-nav="output">全て見る</a></div>
 `},
 
-            dailylistening: {
-                nav: 'home', title: 'Dailyリスニング', html: () => `
-  ${topbar('Dailyリスニング', { back: 'input_hub' })}
+dailylistening:{ nav:'home', title:'Dailyリスニング', html:()=>`
+  ${topbar('Dailyリスニング',{back:'input_hub'})}
   <div class="card simplebox">
     <div class="phase-tag" style="text-align:left;">本日の教材</div>
     <div style="font-size:13px;font-weight:700;margin-top:6px;">Handling a Difficult Client Call</div>
@@ -1955,9 +641,8 @@
   </div>
 `},
 
-            speaking_hub: {
-                nav: 'home', title: 'アウトプット', html: () => `
-  ${topbar('アウトプット', { back: 'home' })}
+speaking_hub:{ nav:'home', title:'アウトプット', html:()=>`
+  ${topbar('アウトプット',{back:'home'})}
   <div class="card hubstat">
     <div class="ring" style="--pct:52%"><span>52%</span></div>
     <div class="txt"><div class="k">今日の発話時間</div><div class="v">16 / 30分</div></div>
@@ -1982,9 +667,8 @@
   </div>
 `},
 
-            unitmap: {
-                nav: 'home', title: 'ユニットマップ', html: () => `
-  ${topbar('ユニットマップ', { back: 'input_hub' })}
+unitmap:{ nav:'home', title:'ユニットマップ', html:()=>`
+  ${topbar('ユニットマップ',{back:'input_hub'})}
   <div class="unitmap-wrap">
     ${unitmapRidge}
     <div class="unode-col">
@@ -2002,9 +686,8 @@
   </div>
 `},
 
-            output: {
-                nav: 'home', title: 'アウトプット課題', html: () => `
-  ${topbar('アウトプット課題', { back: 'speaking_hub' })}
+output:{ nav:'home', title:'アウトプット課題', html:()=>`
+  ${topbar('アウトプット課題',{back:'speaking_hub'})}
   <div class="task-photo"><div class="mesh"></div><div class="cd">開始まで 0:27</div><div class="day">DAY 89 · TASK</div></div>
   <div class="task-prompt">"Describe the picture below."<br><span style="color:var(--muted);font-size:11.5px;font-weight:400;">写真を見て、状況を英語で説明してください。</span></div>
   <div class="task-actions">
@@ -2015,9 +698,8 @@
   <div class="phrasebtn" data-nav="phrase">${icons.book} MYフレーズに登録する</div>
 `},
 
-            phrase: {
-                nav: 'home', title: 'MYフレーズ', html: () => `
-  ${topbar('MYフレーズ', { back: 'home' })}
+phrase:{ nav:'home', title:'MYフレーズ', html:()=>`
+  ${topbar('MYフレーズ',{back:'home'})}
   <div class="folder-grid" data-group="folder">
     <div class="card folder tap"><div class="badge">40</div><div class="ti">重要構文40</div><div class="sub">運営提供</div></div>
     <div class="card folder tap"><div class="badge">50</div><div class="ti">お役立ちフレーズ50</div><div class="sub">運営提供</div></div>
@@ -2036,9 +718,8 @@
   <div class="learned-btn tap" data-toggle="learned">覚えた ✓</div>
 `},
 
-            quiz: {
-                nav: 'home', title: 'MYクイズ', html: () => `
-  ${topbar('MYクイズ', { back: 'phrase' })}
+quiz:{ nav:'home', title:'MYクイズ', html:()=>`
+  ${topbar('MYクイズ',{back:'phrase'})}
   <div class="section-title">出題フォルダ</div>
   <div class="card simplebox">
     <div style="font-size:13px;font-weight:700;">商談で使える言い回し</div>
@@ -2055,9 +736,8 @@
   <div class="primarybtn tap" style="margin:20px 18px 0;" data-nav="records">クイズを開始する</div>
 `},
 
-            freetraining: {
-                nav: 'home', title: 'フリートレーニング', html: () => `
-  ${topbar('フリートレーニング', { back: 'speaking_hub' })}
+freetraining:{ nav:'home', title:'フリートレーニング', html:()=>`
+  ${topbar('フリートレーニング',{back:'speaking_hub'})}
   <div class="cat-list">
     <div class="card catrow tap" data-nav="output"><div class="ic">${icons.book}</div><div class="ti">音読</div>${icons.chev}</div>
     <div class="card catrow tap" data-nav="output"><div class="ic">${icons.mic}</div><div class="ti">英語ピッチ</div>${icons.chev}</div>
@@ -2068,9 +748,8 @@
   </div>
 `},
 
-            mission: {
-                nav: 'home', title: 'Monthlyミッション', html: () => `
-  ${topbar('Monthlyミッション', { back: 'speaking_hub' })}
+mission:{ nav:'home', title:'Monthlyミッション', html:()=>`
+  ${topbar('Monthlyミッション',{back:'speaking_hub'})}
   <div class="card simplebox">
     <div class="phase-tag" style="text-align:left;">MYピッチ · 8月分</div>
     <div class="bignum">未録音</div>
@@ -2084,8 +763,7 @@
   </div>
 `},
 
-            records: {
-                nav: 'records', title: '記録', html: () => `
+records:{ nav:'records', title:'記録', html:()=>`
   ${topbar('記録')}
   <div class="goalring-row">
     <div class="card ringcard"><div class="ring" style="--pct:78%"><span>78%</span></div><div class="lb">学習時間<br>70/90分</div></div>
@@ -2109,18 +787,21 @@
   </div>
 `},
 
-            mypage: {
-                nav: 'mypage', title: 'マイページ', html: () => `
+mypage_edit:{ nav:'mypage', title:'プロフィール編集', html: renderMypageEdit },
+
+mypage:{ nav:'mypage', title:'マイページ', html:()=>`
   ${topbar('マイページ')}
   <div class="card profile-hero">
-    <div class="av">健</div>
-    <div class="nm">佐藤 健太</div>
+    <div class="av">${profile.name.charAt(0)}</div>
+    <div class="nm">${profile.name}</div>
     <div class="ph">PHASE 3 · 標高2,140M</div>
   </div>
+  <div class="section-title">プロフィール<a data-nav="mypage_edit">編集する</a></div>
   <div class="fieldgroup">
-    <div class="fieldrow"><span class="k">今タームの目標</span><span class="v">商談を英語で完結</span></div>
-    <div class="fieldrow"><span class="k">職業 / 職位</span><span class="v">営業 / マネージャー</span></div>
-    <div class="fieldrow"><span class="k">音声性別</span><span class="v">女性</span></div>
+    <div class="fieldrow"><span class="k">今タームの目標</span><span class="v">${profile.termGoal}</span></div>
+    <div class="fieldrow"><span class="k">職業 / 職位</span><span class="v">${profile.job} / ${profile.position}</span></div>
+    <div class="fieldrow"><span class="k">性格</span><span class="v" style="max-width:60%;text-align:right;">${profile.personality}</span></div>
+    <div class="fieldrow"><span class="k">音声性別</span><span class="v">${profile.voiceGender}</span></div>
     <div class="fieldrow tap" data-nav="records"><span class="k">目標履歴</span><span class="v">${icons.chev}</span></div>
   </div>
   <div class="cta-plan">継続プランはこちらから</div>
@@ -2137,95 +818,104 @@
       </div>
     </div>` : ''}
 `},
-        };
+};
 
-        let history_stack = ['splash'];
+let history_stack = ['splash'];
 
-        function goTo(key, push = true) {
-            let s = screens[key];
-            if (!s) {
-                // handle synthetic keys
-                if (key === 'auth_signup') { state.authTab = 'signup'; key = 'auth'; s = screens.auth; }
-                else if (key === 'auth_login') { state.authTab = 'login'; key = 'auth'; s = screens.auth; }
-                else if (key === 'ob_start') { key = 'ob1'; s = screens.ob1; }
-                else if (key === 'login_go_home') { state.profileComplete = true; history_stack = ['home']; key = 'home'; s = screens.home; }
-                else if (key === 'onboard_finish') { state.profileComplete = true; history_stack = ['home']; key = 'home'; s = screens.home; }
-            }
-            if (!s) return;
-            document.getElementById('screen').innerHTML = `<div class="fade">${s.html()}</div>`;
-            document.getElementById('bottomnav').innerHTML = s.nav ? bottomNavHTML(s.nav) : '';
-            document.getElementById('bottomnav').style.display = s.nav ? 'flex' : 'none';
-            document.getElementById('statustitle').textContent = s.title || '';
-            document.getElementById('screen').scrollTop = 0;
-            if (push) {
-                if (history_stack[history_stack.length - 1] !== key) history_stack.push(key);
-            }
-        }
+function goTo(key, push=true){
+  let s = screens[key];
+  if(!s){
+    // handle synthetic keys
+    if(key==='auth_signup'){ state.authTab='signup'; key='auth'; s=screens.auth; }
+    else if(key==='auth_login'){ state.authTab='login'; key='auth'; s=screens.auth; }
+    else if(key==='ob_start'){ key='ob1'; s=screens.ob1; }
+    else if(key==='login_go_home'){ state.profileComplete=true; history_stack=['home']; key='home'; s=screens.home; }
+    else if(key==='onboard_finish'){ state.profileComplete=true; history_stack=['home']; key='home'; s=screens.home; }
+  }
+  if(!s) return;
+  document.getElementById('screen').innerHTML = `<div class="fade">${s.html()}</div>`;
+  document.getElementById('bottomnav').innerHTML = s.nav ? bottomNavHTML(s.nav) : '';
+  document.getElementById('bottomnav').style.display = s.nav ? 'flex' : 'none';
+  document.getElementById('statustitle').textContent = s.title || '';
+  document.getElementById('screen').scrollTop = 0;
+  if(push){
+    if(history_stack[history_stack.length-1] !== key) history_stack.push(key);
+  }
+}
 
-        document.addEventListener('click', (e) => {
-            const locked = e.target.closest('[data-locked]');
-            if (locked) {
-                const tip = locked.querySelector('.navtooltip');
-                if (tip) {
-                    tip.classList.add('show');
-                    clearTimeout(tip._hideTimer);
-                    tip._hideTimer = setTimeout(() => tip.classList.remove('show'), 1800);
-                }
-                return;
-            }
-            const chip = e.target.closest('[data-chip]');
-            if (chip) {
-                const [label, val] = chip.dataset.chip.split('|');
-                state.chipSel[label] = val;
-                // re-render current top of stack
-                goTo(history_stack[history_stack.length - 1], false);
-                return;
-            }
-            // quiz option pills (出題数 / 出題順) — single-select within their group
-            const opt = e.target.closest('.opt');
-            if (opt) {
-                opt.parentElement.querySelectorAll('.opt').forEach(o => o.classList.remove('sel'));
-                opt.classList.add('sel');
-                return;
-            }
-            // MYフレーズ folder selection
-            const folder = e.target.closest('.folder');
-            if (folder && folder.parentElement.dataset.group === 'folder') {
-                folder.parentElement.querySelectorAll('.folder').forEach(f => f.classList.remove('selected'));
-                folder.classList.add('selected');
-                return;
-            }
-            // generic toggle buttons (play / show-hide / learned)
-            const toggle = e.target.closest('[data-toggle]');
-            if (toggle) {
-                toggle.classList.toggle('sel');
-                return;
-            }
-            const action = e.target.closest('[data-action]');
-            if (action) {
-                const a = action.dataset.action;
-                if (a === 'authtab-login') { state.authTab = 'login'; goTo('auth', false); return; }
-                if (a === 'authtab-signup') { state.authTab = 'signup'; goTo('auth', false); return; }
-                if (a === 'open-logout') { state.mypageLogoutOpen = true; goTo('mypage', false); return; }
-                if (a === 'close-logout') { state.mypageLogoutOpen = false; goTo('mypage', false); return; }
-                if (a === 'confirm-logout') {
-                    state.mypageLogoutOpen = false;
-                    state.authTab = 'login';
-                    state.profileComplete = false;
-                    history_stack = ['auth'];
-                    goTo('auth', false);
-                    return;
-                }
-            }
-            const el = e.target.closest('[data-nav]');
-            if (!el) return;
-            const key = el.dataset.nav;
-            if (key === 'home') history_stack = ['home'];
-            goTo(key, key !== 'home');
-        });
+document.addEventListener('input', (e)=>{
+  const f = e.target.closest('[data-field]');
+  if(f){
+    profile[f.dataset.field] = f.value;
+    // keep the topbar avatar / mypage hero name in sync without losing input focus by not re-rendering here
+  }
+});
 
-        goTo('splash', false);
-    </script>
+document.addEventListener('click', (e)=>{
+  const locked = e.target.closest('[data-locked]');
+  if(locked){
+    const tip = locked.querySelector('.navtooltip');
+    if(tip){
+      tip.classList.add('show');
+      clearTimeout(tip._hideTimer);
+      tip._hideTimer = setTimeout(()=>tip.classList.remove('show'), 1800);
+    }
+    return;
+  }
+  const chip = e.target.closest('[data-chip]');
+  if(chip){
+    const [f, val] = chip.dataset.chip.split('|');
+    profile[f] = val;
+    // re-render current top of stack
+    goTo(history_stack[history_stack.length-1], false);
+    return;
+  }
+  // quiz option pills (出題数 / 出題順) — single-select within their group
+  const opt = e.target.closest('.opt');
+  if(opt){
+    opt.parentElement.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+    opt.classList.add('sel');
+    return;
+  }
+  // MYフレーズ folder selection
+  const folder = e.target.closest('.folder');
+  if(folder && folder.parentElement.dataset.group === 'folder'){
+    folder.parentElement.querySelectorAll('.folder').forEach(f=>f.classList.remove('selected'));
+    folder.classList.add('selected');
+    return;
+  }
+  // generic toggle buttons (play / show-hide / learned)
+  const toggle = e.target.closest('[data-toggle]');
+  if(toggle){
+    toggle.classList.toggle('sel');
+    return;
+  }
+  const action = e.target.closest('[data-action]');
+  if(action){
+    const a = action.dataset.action;
+    if(a==='authtab-login'){ state.authTab='login'; goTo('auth', false); return; }
+    if(a==='authtab-signup'){ state.authTab='signup'; goTo('auth', false); return; }
+    if(a==='grant-mic'){ state.permMic=true; goTo('obperm', false); return; }
+    if(a==='grant-speaker'){ state.permSpeaker=true; goTo('obperm', false); return; }
+    if(a==='open-logout'){ state.mypageLogoutOpen=true; goTo('mypage', false); return; }
+    if(a==='close-logout'){ state.mypageLogoutOpen=false; goTo('mypage', false); return; }
+    if(a==='confirm-logout'){
+      state.mypageLogoutOpen=false;
+      state.authTab='login';
+      state.profileComplete=false;
+      history_stack=['auth'];
+      goTo('auth', false);
+      return;
+    }
+  }
+  const el = e.target.closest('[data-nav]');
+  if(!el) return;
+  const key = el.dataset.nav;
+  if(key === 'home') history_stack = ['home'];
+  goTo(key, key!=='home');
+});
+
+goTo('splash', false);
+</script>
 </body>
-
 </html>
