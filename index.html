@@ -4952,6 +4952,15 @@
             weeklyStudyMin: Math.round(120 + Math.random() * 520),
         }));
 
+        // ---- グループごとのランキング用（自分のグループ=aグループ以外は仮データ） ----
+        const OTHER_GROUPS_MOCK = [
+            { name: 'bグループ', memberCount: 6, weeklyStudyMin: Math.round(1200 + Math.random() * 900) },
+            { name: 'cグループ', memberCount: 4, weeklyStudyMin: Math.round(1200 + Math.random() * 900) },
+            { name: 'dグループ', memberCount: 5, weeklyStudyMin: Math.round(1200 + Math.random() * 900) },
+            { name: 'eグループ', memberCount: 7, weeklyStudyMin: Math.round(1200 + Math.random() * 900) },
+            { name: 'fグループ', memberCount: 5, weeklyStudyMin: Math.round(1200 + Math.random() * 900) },
+        ];
+
         // ---- past group membership history ----
         const pastGroups = [
             {
@@ -5308,13 +5317,14 @@
             const myTotal = personalTotalForRankingPeriod(period);
 
             if (recordsView.scope === 'group') {
+                const myGroupTotal = myTotal + groupMembers.reduce((a, m) => a + memberTotalForRankingPeriod(m.weeklyStudyMin, period), 0);
                 const rows = [
-                    { name: profile.name, min: myTotal, me: true },
-                    ...groupMembers.map(m => ({ name: m.name, min: memberTotalForRankingPeriod(m.weeklyStudyMin, period), me: false })),
+                    { name: 'aグループ', min: myGroupTotal, me: true },
+                    ...OTHER_GROUPS_MOCK.map(g => ({ name: g.name, min: memberTotalForRankingPeriod(g.weeklyStudyMin, period), me: false })),
                 ].sort((a, b) => b.min - a.min);
 
                 return `
-      <div class="section-title">グループ内ランキング<span class="sumsub">（${periodNoun2}の学習時間）</span></div>
+      <div class="section-title">グループランキング<span class="sumsub">（${periodNoun2}の合計学習時間）</span></div>
       <div class="card" style="margin:0 18px 16px;">
         ${rows.map((r, i) => renderRankRow(r, i)).join('')}
       </div>
